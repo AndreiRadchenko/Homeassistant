@@ -1,0 +1,384 @@
+2024-09-19 11:29:01.624 WARNING (SyncWorker_3) [homeassistant.components.local_file.camera] Could not read camera Courtyard_still image from file: /config/www/cam_captures/cam_captures.jpg
+2024-09-19 11:29:01.627 WARNING (SyncWorker_0) [homeassistant.components.local_file.camera] Could not read camera Amazon_rekognition image from file: /config/www/amazon-rekognition/rekognition_car_courtyard_still_latest.jpg
+2024-09-19 11:29:01.630 WARNING (SyncWorker_2) [homeassistant.components.local_file.camera] Could not read camera Doorbell_still image from file: /config/www/cam_captures/doorbell_captures.jpg
+2024-09-19 11:29:24.647 WARNING (MainThread) [aioesphomeapi.reconnect_logic] Can't connect to ESPHome API for sons_blind @ 192.168.0.38: Error connecting to [AddrInfo(family=<AddressFamily.AF_INET: 2>, type=<SocketKind.SOCK_STREAM: 1>, proto=6, sockaddr=IPv4Sockaddr(address='192.168.0.38', port=6053))]: [Errno 113] Connect call failed ('192.168.0.38', 6053) (SocketAPIError)
+2024-09-19 11:29:37.207 ERROR (MainThread) [homeassistant.helpers.event] Error while processing template: Template<template=({{(states('sensor.sons_blind1_position')) | int}}) renders=2>
+Traceback (most recent call last):
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 604, in async_render
+    render_result = _render_with_context(self.template, compiled, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 2639, in _render_with_context
+    return template.render(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/jinja2/environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "/usr/local/lib/python3.12/site-packages/jinja2/environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "<template>", line 1, in top-level template code
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 2277, in forgiving_int_filter
+    raise_no_default("int", value)
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 1872, in raise_no_default
+    raise ValueError(
+ValueError: Template error: int got invalid input 'unavailable' when rendering template '{{(states('sensor.sons_blind1_position')) | int}}' but no default was specified
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 716, in async_render_to_info
+    render_info._result = self.async_render(  # noqa: SLF001
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 606, in async_render
+    raise TemplateError(err) from err
+homeassistant.exceptions.TemplateError: ValueError: Template error: int got invalid input 'unavailable' when rendering template '{{(states('sensor.sons_blind1_position')) | int}}' but no default was specified
+2024-09-19 11:29:37.243 ERROR (MainThread) [homeassistant.helpers.event] Error while processing template: Template<template=({% if states('sensor.sons_blind1_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}) renders=3>
+Traceback (most recent call last):
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 2258, in forgiving_float_filter
+    return float(value)
+           ^^^^^^^^^^^^
+ValueError: could not convert string to float: 'unavailable'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 604, in async_render
+    render_result = _render_with_context(self.template, compiled, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 2639, in _render_with_context
+    return template.render(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/jinja2/environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "/usr/local/lib/python3.12/site-packages/jinja2/environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "<template>", line 1, in top-level template code
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 2261, in forgiving_float_filter
+    raise_no_default("float", value)
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 1872, in raise_no_default
+    raise ValueError(
+ValueError: Template error: float got invalid input 'unavailable' when rendering template '{% if states('sensor.sons_blind1_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}' but no default was specified
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 716, in async_render_to_info
+    render_info._result = self.async_render(  # noqa: SLF001
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 606, in async_render
+    raise TemplateError(err) from err
+homeassistant.exceptions.TemplateError: ValueError: Template error: float got invalid input 'unavailable' when rendering template '{% if states('sensor.sons_blind1_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}' but no default was specified
+2024-09-19 11:29:37.255 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: int got invalid input 'unavailable' when rendering template '{{(states('sensor.sons_blind1_position')) | int}}' but no default was specified') while processing template 'Template<template=({{(states('sensor.sons_blind1_position')) | int}}) renders=4>' for attribute '_position' in entity 'cover.sons_blind1'
+2024-09-19 11:29:37.256 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: float got invalid input 'unavailable' when rendering template '{% if states('sensor.sons_blind1_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}' but no default was specified') while processing template 'Template<template=({% if states('sensor.sons_blind1_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}) renders=5>' for attribute '_attr_icon' in entity 'cover.sons_blind1'
+2024-09-19 11:29:37.261 ERROR (MainThread) [homeassistant.helpers.event] Error while processing template: Template<template=({{(states('sensor.sons_blind2_position')) | int}}) renders=2>
+Traceback (most recent call last):
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 604, in async_render
+    render_result = _render_with_context(self.template, compiled, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 2639, in _render_with_context
+    return template.render(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/jinja2/environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "/usr/local/lib/python3.12/site-packages/jinja2/environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "<template>", line 1, in top-level template code
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 2277, in forgiving_int_filter
+    raise_no_default("int", value)
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 1872, in raise_no_default
+    raise ValueError(
+ValueError: Template error: int got invalid input 'unavailable' when rendering template '{{(states('sensor.sons_blind2_position')) | int}}' but no default was specified
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 716, in async_render_to_info
+    render_info._result = self.async_render(  # noqa: SLF001
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 606, in async_render
+    raise TemplateError(err) from err
+homeassistant.exceptions.TemplateError: ValueError: Template error: int got invalid input 'unavailable' when rendering template '{{(states('sensor.sons_blind2_position')) | int}}' but no default was specified
+2024-09-19 11:29:37.270 ERROR (MainThread) [homeassistant.helpers.event] Error while processing template: Template<template=({% if states('sensor.sons_blind2_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}) renders=3>
+Traceback (most recent call last):
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 2258, in forgiving_float_filter
+    return float(value)
+           ^^^^^^^^^^^^
+ValueError: could not convert string to float: 'unavailable'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 604, in async_render
+    render_result = _render_with_context(self.template, compiled, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 2639, in _render_with_context
+    return template.render(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/jinja2/environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "/usr/local/lib/python3.12/site-packages/jinja2/environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "<template>", line 1, in top-level template code
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 2261, in forgiving_float_filter
+    raise_no_default("float", value)
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 1872, in raise_no_default
+    raise ValueError(
+ValueError: Template error: float got invalid input 'unavailable' when rendering template '{% if states('sensor.sons_blind2_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}' but no default was specified
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 716, in async_render_to_info
+    render_info._result = self.async_render(  # noqa: SLF001
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/homeassistant/homeassistant/helpers/template.py", line 606, in async_render
+    raise TemplateError(err) from err
+homeassistant.exceptions.TemplateError: ValueError: Template error: float got invalid input 'unavailable' when rendering template '{% if states('sensor.sons_blind2_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}' but no default was specified
+2024-09-19 11:29:37.289 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: int got invalid input 'unavailable' when rendering template '{{(states('sensor.sons_blind2_position')) | int}}' but no default was specified') while processing template 'Template<template=({{(states('sensor.sons_blind2_position')) | int}}) renders=4>' for attribute '_position' in entity 'cover.sons_blind2'
+2024-09-19 11:29:37.290 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: float got invalid input 'unavailable' when rendering template '{% if states('sensor.sons_blind2_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}' but no default was specified') while processing template 'Template<template=({% if states('sensor.sons_blind2_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}) renders=5>' for attribute '_attr_icon' in entity 'cover.sons_blind2'
+2024-09-19 11:29:37.535 ERROR (MainThread) [homeassistant.components.automation.corridor_light_automation_2] Error rendering variables: UndefinedError: 'dict object' has no attribute 'entity_id'
+2024-09-19 11:33:35.361 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:33:37.014 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:33:37.929 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:33:38.600 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:33:39.114 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:33:39.570 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:33:39.576 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:33:44.770 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:35:36.471 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01'
+      ^
+2024-09-19 11:40:00.286 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:40:02.424 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:40:03.317 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:40:03.983 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:40:11.668 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:40:12.270 ERROR (MainThread) [aiohttp.server] Error handling request
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 350, in data_received
+    messages, upgraded, tail = self._request_parser.feed_data(data)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_http_parser.pyx", line 557, in aiohttp._http_parser.HttpParser.feed_data
+aiohttp.http_exceptions.BadStatusLine: 400, message:
+  Invalid method encountered:
+
+    b'\x16\x03\x01\x02\x98\x01'
+      ^
+2024-09-19 11:43:01.288 ERROR (MainThread) [homeassistant.components.hassio] Failed to to call /ingress/validate_session - System is not ready with state: shutdown
+2024-09-19 11:43:01.312 ERROR (MainThread) [homeassistant.components.hassio] Failed to to call /ingress/session - System is not ready with state: shutdown
+2024-09-19 11:43:09.134 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: int got invalid input 'unavailable' when rendering template '{{(states('sensor.cabinet_blind1_position')) | int}}' but no default was specified') while processing template 'Template<template=({{(states('sensor.cabinet_blind1_position')) | int}}) renders=6>' for attribute '_position' in entity 'cover.cabinet_blind_left'
+2024-09-19 11:43:09.135 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: float got invalid input 'unavailable' when rendering template '{% if states('sensor.cabinet_blind1_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}' but no default was specified') while processing template 'Template<template=({% if states('sensor.cabinet_blind1_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}) renders=7>' for attribute '_attr_icon' in entity 'cover.cabinet_blind_left'
+2024-09-19 11:43:09.142 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: int got invalid input 'unavailable' when rendering template '{{(states('sensor.cabinet_blind2_position')) | int}}' but no default was specified') while processing template 'Template<template=({{(states('sensor.cabinet_blind2_position')) | int}}) renders=6>' for attribute '_position' in entity 'cover.cabinet_blind_right'
+2024-09-19 11:43:09.143 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: float got invalid input 'unavailable' when rendering template '{% if states('sensor.cabinet_blind2_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}' but no default was specified') while processing template 'Template<template=({% if states('sensor.cabinet_blind2_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}) renders=7>' for attribute '_attr_icon' in entity 'cover.cabinet_blind_right'
+2024-09-19 11:43:09.168 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: int got invalid input 'unavailable' when rendering template '{{(states('sensor.bedroom_blind1_position')) | int}}' but no default was specified') while processing template 'Template<template=({{(states('sensor.bedroom_blind1_position')) | int}}) renders=6>' for attribute '_position' in entity 'cover.bedroom_blind_left'
+2024-09-19 11:43:09.168 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: float got invalid input 'unavailable' when rendering template '{% if states('sensor.bedroom_blind1_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}' but no default was specified') while processing template 'Template<template=({% if states('sensor.bedroom_blind1_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}) renders=7>' for attribute '_attr_icon' in entity 'cover.bedroom_blind_left'
+2024-09-19 11:43:09.172 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: int got invalid input 'unavailable' when rendering template '{{(states('sensor.bedroom_blind2_position')) | int}}' but no default was specified') while processing template 'Template<template=({{(states('sensor.bedroom_blind2_position')) | int}}) renders=6>' for attribute '_position' in entity 'cover.bedroom_blind_right'
+2024-09-19 11:43:09.172 ERROR (MainThread) [homeassistant.components.template.template_entity] TemplateError('ValueError: Template error: float got invalid input 'unavailable' when rendering template '{% if states('sensor.bedroom_blind2_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}' but no default was specified') while processing template 'Template<template=({% if states('sensor.bedroom_blind2_position')|float > 70 %}
+    mdi:blinds-open
+{% else %}
+    mdi:blinds
+{% endif %}) renders=7>' for attribute '_attr_icon' in entity 'cover.bedroom_blind_right'

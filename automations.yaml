@@ -1,0 +1,506 @@
+- id: '1721490600754'
+  alias: Bedroom Switch
+  description: ''
+  trigger:
+  - device_id: e23c7268666d801df6238ad13efe5aed
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: remote_button_short_press
+    id: bedroomSwitchSinglePress
+  - device_id: e23c7268666d801df6238ad13efe5aed
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: remote_button_double_press
+    id: bedroomSwitchDoublePress
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - bedroomSwitchSinglePress
+    then:
+    - type: toggle
+      device_id: 1d62bd7c1da1236c2096ad2a7a23fa3b
+      entity_id: 3ee26b629ebc2fe3f92f15850d026a82
+      domain: light
+    else:
+    - service: light.toggle
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.esphome_bedroom_light
+  mode: single
+- id: '1721515662857'
+  alias: Corridor Switch
+  description: ''
+  trigger:
+  - device_id: 9ab529da38622c37123da3404c148fef
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: remote_button_short_press
+    id: corridorSwitchSinglePress
+  - device_id: 9ab529da38622c37123da3404c148fef
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: remote_button_double_press
+    id: corridorSwitchDoublePress
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - corridorSwitchSinglePress
+    then:
+    - type: toggle
+      device_id: f313f0af6a87c793d04024ba05f01935
+      entity_id: afceb644b042c6c9eedc1736b4719ec8
+      domain: light
+    else:
+    - service: light.toggle
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.esphome_mirror_light
+  mode: single
+- id: '1721545654266'
+  alias: Toilet light conditional
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.esphome_toilet_motion
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - service: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.esphome_toilet_light
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - if:
+    - condition: state
+      entity_id: binary_sensor.esphome_toilet_door
+      state: 'off'
+    then:
+    - delay:
+        hours: 0
+        minutes: 25
+        seconds: 0
+        milliseconds: 0
+  - service: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.esphome_toilet_light
+  mode: restart
+- id: '1721578322315'
+  alias: Turn off lamp on start
+  description: ''
+  trigger:
+  - platform: homeassistant
+    event: start
+  condition: []
+  action:
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 1d62bd7c1da1236c2096ad2a7a23fa3b
+    entity_id: 3ee26b629ebc2fe3f92f15850d026a82
+    domain: light
+  - type: turn_off
+    device_id: f313f0af6a87c793d04024ba05f01935
+    entity_id: afceb644b042c6c9eedc1736b4719ec8
+    domain: light
+  mode: single
+- id: '1721606389314'
+  alias: Corridor Light automation
+  description: ''
+  use_blueprint:
+    path: Blackshome/sensor-light.yaml
+    input:
+      motion_trigger:
+      - binary_sensor.corridormotion_motion
+      light_switch:
+        entity_id: light.corridor
+      time_delay: 10
+      light_brightness: 90
+      light_colour_temperature: 3500
+      include_dynamic_lighting: enable_sun_elevation_colour_brightness
+      dynamic_lighting_max_lux: 900
+      include_sun: sun_enabled
+      include_light_control: []
+      dynamic_lighting_min_brightness: 74
+      dynamic_lighting_min_lux: 450
+- id: '1721606431524'
+  alias: Corridor Light automation
+  description: ''
+  use_blueprint:
+    path: Blackshome/sensor-light.yaml
+    input:
+      motion_trigger:
+      - binary_sensor.corridormotion_motion
+      light_switch:
+        device_id: f313f0af6a87c793d04024ba05f01935
+      time_delay: 10
+      light_brightness: 60
+      light_colour_temperature: 3500
+      include_dynamic_lighting: enable_sun_elevation_colour_brightness
+      dynamic_lighting_max_lux: 700
+      include_sun: sun_enabled
+- id: '1721606836073'
+  alias: Turn off outdoor light on door lock
+  description: ''
+  trigger:
+  - platform: device
+    device_id: 90f2a6e72bfe849ca3a208d21545ada7
+    domain: lock
+    entity_id: 78fa2c22384eceb4b64f36af71f0c74e
+    type: locked
+  condition: []
+  action:
+  - service: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.outdoor_light
+  mode: single
+- id: '1721607079093'
+  alias: Outdoor light on on door open after sunset
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.esphome_corridor_door
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+  action:
+  - service: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.outdoor_light
+  mode: single
+- id: '1721608719459'
+  alias: Kitchen light automation
+  description: ''
+  use_blueprint:
+    path: Blackshome/sensor-light.yaml
+    input:
+      motion_trigger:
+      - binary_sensor.esphome_sink_motion
+      - binary_sensor.esphome_kitchen_motion
+      light_switch:
+        entity_id:
+        - light.esphome_kitchen_light
+        - light.esphome_sink_light
+      time_delay: 15
+      include_sun: sun_enabled
+- id: '1721647824727'
+  alias: Bedroom blind remote
+  description: ''
+  trigger:
+  - device_id: a26883ffa30d3738390761cc8f6285e0
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_1
+    id: up
+  - device_id: a26883ffa30d3738390761cc8f6285e0
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_2
+    id: stop
+  - device_id: a26883ffa30d3738390761cc8f6285e0
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_3
+    id: down
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - up
+      sequence:
+      - service: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.bedroom_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - stop
+      sequence:
+      - service: cover.stop_cover
+        data: {}
+        target:
+          entity_id: cover.bedroom_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - down
+      sequence:
+      - service: cover.close_cover
+        data: {}
+        target:
+          entity_id: cover.bedroom_blinds
+  mode: single
+- id: '1721674558887'
+  alias: Sink light band to kitchen light switch
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: 8f541352036c387495ee57bdf71404b1
+    entity_id: 31ddee5a7b27fe6c002f66b7aaa47def
+    domain: light
+    id: 'on'
+  - platform: device
+    type: turned_off
+    device_id: 8f541352036c387495ee57bdf71404b1
+    entity_id: 31ddee5a7b27fe6c002f66b7aaa47def
+    domain: light
+    id: 'off'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - 'on'
+      sequence:
+      - service: light.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.esphome_sink_light
+    - conditions:
+      - condition: trigger
+        id:
+        - 'off'
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+          - light.esphome_sink_light
+        data: {}
+  mode: single
+- id: '1721730583618'
+  alias: Stair light adjust
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: cd83eb9ce52bdb239fc915b69574e5b9
+    entity_id: 155648aaf718d96e3dd53b670d1ecd86
+    domain: light
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.stair_light_simple
+  mode: single
+- id: '1721792751107'
+  alias: Doorbell cam actionable nitification
+  description: ''
+  use_blueprint:
+    path: AndreiRadchenko/doorbell-cam-actionable-nitification.yaml
+    input:
+      doorbell_button: binary_sensor.wicket_wicket_doorbell
+      doorbell_cam: camera.doorbell_2
+      notify_dev: notify.all_devices
+      uri_: /lovelace/home
+      action1:
+      - service: lock.unlock
+        metadata: {}
+        data: {}
+        target:
+          entity_id: lock.wicket_wicket_lock
+      delay: 60
+      action1_title: Open wiket
+      action2_title: Leave closed
+- id: '1721919280556'
+  alias: Cabinet blind remote
+  description: ''
+  trigger:
+  - device_id: 4bb4e3e79922e7cc2c4979ba07e8d79d
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_1
+    id: up
+  - device_id: 4bb4e3e79922e7cc2c4979ba07e8d79d
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_2
+    id: stop
+  - device_id: 4bb4e3e79922e7cc2c4979ba07e8d79d
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_3
+    id: down
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - up
+      sequence:
+      - service: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - cover.cabinet_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - stop
+      sequence:
+      - service: cover.stop_cover
+        data: {}
+        target:
+          entity_id:
+          - cover.cabinet_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - down
+      sequence:
+      - service: cover.close_cover
+        data: {}
+        target:
+          entity_id:
+          - cover.cabinet_blinds
+  mode: single
+- id: '1722263818841'
+  alias: Sons-room blind remote
+  description: ''
+  trigger:
+  - device_id: ee39b5ea638f3a0122a88c3a2917d103
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_1
+    id: up
+  - device_id: ee39b5ea638f3a0122a88c3a2917d103
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_2
+    id: stop
+  - device_id: ee39b5ea638f3a0122a88c3a2917d103
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_3
+    id: down
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - up
+      sequence:
+      - service: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.sons_room_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - stop
+      sequence:
+      - service: cover.stop_cover
+        data: {}
+        target:
+          entity_id: cover.sons_room_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - down
+      sequence:
+      - service: cover.close_cover
+        data: {}
+        target:
+          entity_id: cover.sons_room_blinds
+  mode: single
+- id: '1722266303001'
+  alias: Close valve on water leak
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.water_leak_moisture
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.toilet_valve
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.water_pump_relay
+  mode: single
+- id: '1722267661871'
+  alias: water leak notification
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.water_leak_moisture
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - service: notify.ALL_DEVICES
+    data:
+      title: Check this out!
+      message: Water leak detected!
+      data:
+        ttl: 0
+        priority: high
+        image: http://radchenko.duckdns.org/local/images/water_leak.jpeg
+        actions:
+        - action: URI
+          title: Close valve
+          uri: /dashboard-home/toilet
+        push:
+          sound: US-EN-Morgan-Freeman-Water-Detected-In-Basement.wav
+  mode: single

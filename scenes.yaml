@@ -1,0 +1,58 @@
+- id: '1721677218267'
+  name: Stair light simple
+  entities:
+    light.esphome_bedroom_light:
+      supported_color_modes:
+      - onoff
+      color_mode:
+      friendly_name: esphome bedroom light
+      supported_features: 8
+      state: 'off'
+    light.esphome_cabinet_light:
+      supported_color_modes:
+      - onoff
+      color_mode:
+      friendly_name: esphome cabinet light
+      supported_features: 8
+      state: 'off'
+    light.stair_light:
+      effect_list:
+      - None
+      - Scan
+      - Scan Effect With Custom Values
+      - Twinkle
+      - Custom Twinkle Effect
+      - Random Twinkle
+      - ' Custom Random Twinkle Effect'
+      - Fireworks
+      - Custom Fireworks Effect
+      - Addressable Flicker
+      - Custom Flicker Effect
+      - lambda two
+      - Running range
+      - Running range inverse
+      - Falling light
+      - Rise light
+      - Simple light
+      - Candy Cane
+      - Wheel of Color
+      - Vesuvius
+      supported_color_modes:
+      - rgb
+      effect: None
+      color_mode: rgb
+      brightness: 128
+      hs_color:
+      - 27.13
+      - 45.098
+      rgb_color:
+      - 255
+      - 192
+      - 140
+      xy_color:
+      - 0.455
+      - 0.374
+      friendly_name: Stair Light
+      supported_features: 44
+      state: 'on'
+  metadata: {}

@@ -1,0 +1,224 @@
+# - platform: mqtt
+#   name: "Kitchen blind"
+#   device_class: blind
+#   command_topic: "RF_bridge/cmnd/Backlog"
+#   qos: 0
+#   payload_open: "rfraw AA B0 4C 04 08 13E2 0262 0122 13E2 38192A192A1A1A19292A192A1A1929292A1A1929292929292A192A1A19292A1A1A1A1A1A1A1A1A1A192A1A1A1A1A1A1A1A1A1A1A1A192A19292A1929292A1A1A1A19 55; rfraw 0"
+#   payload_close: "rfraw AA B0 4C 04 08 13F6 0258 010E 13E2 38192A192A1A1A19292A192A1A1929292A1A1929292929292A192A1A19292A1A1A1A1A1A1A1A1A1A192A1A1A1A1A1A1A1A1A192A1A1A1A1929292A192A192A1A1A19 55; rfraw 0"
+#   payload_stop: "rfraw AA B0 4C 04 08 140A 0258 010E 13EC 38192A192A1A1A19292A192A1A1929292A1A1929292929292A192A1A19292A1A1A1A1A1A1A1A1A1A192A1A1A1A1A1A1A1A1A1A192A1A1A1929292A1A1A192A1A1A19 55; rfraw 0"
+#   optimistic: true
+
+- platform: template
+  covers:
+    sons_blind1:
+      device_class: blind
+      friendly_name: "Sons blind1"
+      position_template: "{{(states('sensor.sons_blind1_position')) | int}}"
+      open_cover:
+        service: esphome.sons_blind_control_stepper1
+        data:
+          target: 100
+      close_cover:
+        service: esphome.sons_blind_control_stepper1
+        data:
+          #target: !lambda 'return (sensor.max_stepper_position) | int;'
+          target: 0
+      set_cover_position:
+        service: esphome.sons_blind_control_stepper1
+        data_template:
+          target: "{{position}}"
+      stop_cover:
+        service: esphome.sons_blind_stepper1_stop
+      icon_template: >-
+        {% if states('sensor.sons_blind1_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}
+
+    sons_blind2:
+      device_class: blind
+      friendly_name: "Sons blind2"
+      position_template: "{{(states('sensor.sons_blind2_position')) | int}}"
+      open_cover:
+        service: esphome.sons_blind_control_stepper2
+        data:
+          target: 100
+      close_cover:
+        service: esphome.sons_blind_control_stepper2
+        data:
+          #target: !lambda 'return (sensor.max_stepper_position) | int;'
+          target: 0
+      set_cover_position:
+        service: esphome.sons_blind_control_stepper2
+        data_template:
+          target: "{{position}}"
+      stop_cover:
+        service: esphome.sons_blind_stepper2_stop
+      icon_template: >-
+        {% if states('sensor.sons_blind2_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}
+
+    cabinet_blind_left:
+      device_class: blind
+      friendly_name: "Cabinet Blind Left"
+      position_template: "{{(states('sensor.cabinet_blind1_position')) | int}}"
+      open_cover:
+        service: esphome.cabinet_blind_control_stepper1
+        data:
+          target: 100
+      close_cover:
+        service: esphome.cabinet_blind_control_stepper1
+        data:
+          #target: !lambda 'return (sensor.max_stepper_position) | int;'
+          target: 0
+      set_cover_position:
+        service: esphome.cabinet_blind_control_stepper1
+        data_template:
+          target: "{{position}}"
+      stop_cover:
+        service: esphome.cabinet_blind_stepper1_stop      
+      icon_template: >-
+        {% if states('sensor.cabinet_blind1_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}
+        
+    cabinet_blind_right:
+      device_class: blind
+      friendly_name: "Cabinet Blind Right"
+      position_template: "{{(states('sensor.cabinet_blind2_position')) | int}}"
+      open_cover:
+        service: esphome.cabinet_blind_control_stepper2
+        data:
+          target: 100
+      close_cover:
+        service: esphome.cabinet_blind_control_stepper2
+        data:
+          #target: !lambda 'return (sensor.max_stepper_position) | int;'
+          target: 0
+      set_cover_position:
+        service: esphome.cabinet_blind_control_stepper2
+        data_template:
+          target: "{{position}}"
+      stop_cover:
+        service: esphome.cabinet_blind_stepper2_stop      
+      icon_template: >-
+        {% if states('sensor.cabinet_blind2_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}
+
+    bedroom_blind_left:
+      device_class: blind
+      friendly_name: "Bedroom Blind Left"
+      position_template: "{{(states('sensor.bedroom_blind1_position')) | int}}"
+      open_cover:
+        service: esphome.bedroom_blind_control_stepper1
+        data:
+          target: 100
+      close_cover:
+        service: esphome.bedroom_blind_control_stepper1
+        data:
+          #target: !lambda 'return (sensor.max_stepper_position) | int;'
+          target: 0
+      set_cover_position:
+        service: esphome.bedroom_blind_control_stepper1
+        data_template:
+          target: "{{position}}"
+      stop_cover:
+        service: esphome.bedroom_blind_stepper1_stop      
+      icon_template: >-
+        {% if states('sensor.bedroom_blind1_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}
+        
+    bedroom_blind_right:
+      device_class: blind
+      friendly_name: "Bedroom Blind Right"
+      position_template: "{{(states('sensor.bedroom_blind2_position')) | int}}"
+      open_cover:
+        service: esphome.bedroom_blind_control_stepper2
+        data:
+          target: 100
+      close_cover:
+        service: esphome.bedroom_blind_control_stepper2
+        data:
+          #target: !lambda 'return (sensor.max_stepper_position) | int;'
+          target: 0
+      set_cover_position:
+        service: esphome.bedroom_blind_control_stepper2
+        data_template:
+          target: "{{position}}"
+      stop_cover:
+        service: esphome.bedroom_blind_stepper2_stop      
+      icon_template: >-
+        {% if states('sensor.bedroom_blind2_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}    
+
+- platform: group
+  name: "Sons room blinds"
+  entities:
+    - cover.sons_blind1
+    - cover.sons_blind2
+
+- platform: group
+  name: "Guest room blinds"
+  entities:
+    - cover.guest_blind_left_2
+    - cover.guest_blind_right_2
+
+- platform: group
+  name: "Bedroom blinds"
+  entities:
+    - cover.bedroom_blind_left
+    - cover.bedroom_blind_right
+
+- platform: group
+  name: "Cabinet blinds"
+  entities:
+    - cover.cabinet_blind_left
+    - cover.cabinet_blind_right
+    
+# - platform: mqtt
+#   name: "Gate"
+#   device_class: garage
+#   command_topic: "RF_bridge/cmnd/RfCode"
+#   qos: 0
+#   #payload_open: "4178728"
+#   #payload_close: "4178724"
+#   #payload_stop: "4178724"
+#   payload_open: "8902696"
+#   payload_close: "8902696"
+#   payload_stop: "8902696"
+#   optimistic: true
+
+# - platform: mqtt
+#   name: "Gate left"
+#   device_class: garage
+#   command_topic: "RF_bridge/cmnd/RfCode"
+#   qos: 0
+#   payload_open: "7178738"
+#   payload_close: "7178734"
+#   payload_stop: "7178730"
+#   optimistic: true
+
+# - platform: mqtt
+#   name: "Gate right"
+#   device_class: garage
+#   command_topic: "RF_bridge/cmnd/RfCode"
+#   qos: 0
+#   payload_open: "8178758"
+#   payload_close: "8178754"
+#   payload_stop: "8178750"
+#   optimistic: true      

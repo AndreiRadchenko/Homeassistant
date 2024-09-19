@@ -1,0 +1,71 @@
+- platform: ffmpeg
+  name: courtyard_sd
+  input: !secret rtsp_sd
+- platform: ffmpeg
+  name: courtyard_hd
+  input: !secret rtsp_hd
+- platform: ffmpeg
+  name: courtyard
+  #  still_image_url: https://radchenko.duckdns.org/local/cam_captures/courtyard_hd.jpg
+  input: !secret rtsp_hd
+
+- platform: ffmpeg
+  #- platform: generic
+  name: doorbell_2
+  #  still_image_url: https://radchenko.duckdns.org/local/cam_captures/doorbell_still.jpg
+  #  stream_source: !secret rtsp_doorbell_hd
+  input: !secret rtsp_doorbell_hd
+
+- platform: ffmpeg
+  name: doorbell_sd
+  #  still_image_url: https://radchenko.duckdns.org/local/cam_captures/courtyard_hd.jpg
+  input: !secret rtsp_doorbell_sd
+  #  username: home
+  #  password: Grushevskogo8a
+  #  port: 8082
+
+- platform: ffmpeg
+  name: cabinet_cam
+  input: !secret cabinet_rtsp_sd
+- platform: ffmpeg
+  name: cabinet
+  input: !secret cabinet_rtsp_hd
+
+- platform: local_file
+  name: Courtyard_still
+  file_path: /config/www/cam_captures/cam_captures.jpg
+- platform: local_file
+  name: Amazon_rekognition
+  file_path: /config/www/amazon-rekognition/rekognition_car_courtyard_still_latest.jpg
+- platform: local_file
+  name: Doorbell_still
+  file_path: /config/www/cam_captures/doorbell_captures.jpg
+  
+    
+#android_ip_webcam:
+#  - host: 192.168.0.4
+#    port: 8082
+#    username: !secret user
+#    password: !secret pass
+#    sensors:
+#      - audio_connections
+#      - battery_level
+#      - battery_temp
+#      - battery_voltage
+#      - light
+#      - motion
+#      - pressure
+#      - proximity
+#      - sound
+#      - video_connections
+#    switches:
+#      - exposure_lock
+#      - ffc
+#      - focus
+#      - gps_active
+#      - motion_detect
+#      - night_vision
+#      - overlay
+#      - torch
+#      - whitebalance_lock
+#      - video_recording
