@@ -1,0 +1,226 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /hacsfiles/lovelace-card-mod/card-mod.js?hacstag=190927524410
+  
+zha_toolkit:
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+camera: !include cameras.yaml  
+cover: !include covers.yaml
+template: !include templates.yaml
+
+
+notify:
+  - name: ALL_DEVICES
+    platform: group
+    services:
+      - service: mobile_app_iphonexr
+      - service: mobile_app_irinka
+      
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.30.33.0/24
+    
+# Example base configuration.yaml entry
+conversation:
+    
+sensor:
+  - platform: gpio_control
+  
+# Full configuration.yaml entry
+binary_sensor:
+  - platform: gpio
+    sensors:
+      - port: 11
+        device: "/dev/gpiochip2"
+        name: "PIR Office"
+        unique_id: "pir_office_sensor_port_11"
+        bouncetime: 80
+        invert_logic: true
+        pull_mode: "DOWN"
+    
+input_text:
+  alexa_actionable_notification:
+    name: Alexa Actionable Notification Holder
+    max: 255
+    initial: '{"text": "This is a test of the alexa actions custom skill. Did it work?", "event": "actionable.skill.test"}'    
+    
+alexa:
+  smart_home:
+    locale: en-US
+    #endpoint: https://api.eu.amazonalexa.com/v3/events
+    endpoint: https://api.amazonalexa.com/v3/events
+    client_id: !secret alexa_client_id
+    client_secret: !secret alexa_client_secret
+    filter:
+      include_entities:
+        - light.esphome_bedroom_light
+        - light.kitchen_lights
+        - light.outdoor_light
+        - binary_sensor.wicket_wicket_doorbell
+        - binary_sensor.wicket_wiket_status
+        - binary_sensor.velikodimerska_teritorialna_gromada_air
+        - binary_sensor.backup_power_overload
+        - cover.gate_cover_gate
+        - cover.bedroom_blinds
+        - script.unlock_wicket
+        - fan.esphome_kitchen_hood
+      include_domains:
+        # - switch
+        # - binary_sensor
+        - light
+        # - sensor 
+        # - group
+        # - input_boolean
+        - fan
+        # - climate
+        # - cover
+        # - camera
+        - lock
+        - script
+        # - automation     
+    entity_config:
+      light.esphome_bedroom_light:
+        name: "Bedroom light"
+        description: "The light in the bedroom"
+      light.kitchen_lights:
+        name: "Kitchen light"
+        description: "The light in the kitchen"
+      light.esphome_sink_light:
+        name: "Sink light"
+        description: "The light in the kitchen"    
+      switch.sink_light:
+        display_categories: LIGHT
+      binary_sensor.wicket_wicket_doorbell:
+        name: "Doorbell"
+        display_categories: DOORBELL
+      binary_sensor.wicket_wiket_status:
+        name: "Main Grid"
+        display_categories: MOTION_SENSOR
+      binary_sensor.velikodimerska_teritorialna_gromada_air:
+        name: "Air raid alert"
+        display_categories: CONTACT_SENSOR
+      binary_sensor.backup_power_overload:
+        name: "Backup power overload"
+        display_categories: CONTACT_SENSOR    
+      cover.gate_cover_gate:
+        name: "Gate"
+      cover.bedroom_blinds:
+        name: "Bedroom blinds"
+
+# Example configuration.yaml entry configuring HomeKit
+homekit:
+  - filter:
+      include_domains:
+        - light
+        - media_player
+        - fan
+        - vacuum
+        - climate
+        - input_number
+        - script
+      include_entity_globs:
+        - sensor.*_temp
+        - sensor.*_temperature
+        - sensor.*_humidity
+        - binary_sensor.*_motion
+        - binary_sensor.*_window
+        - binary_sensor.*_door
+        - cover.*_blinds
+      include_entities:
+        - lock.yunding_ford_door_lock
+        - lock.wicket_wicket_lock
+        - binary_sensor.wicket_esphome_wicket
+        - binary_sensor.wicket_wicket_doorbell
+        - binary_sensor.corridormotion_motion
+        - binary_sensor.wicket_wiket_status
+        - binary_sensor.water_leak_moisture
+        - input_boolean.iphone_car_connected
+        - sensor.guest_blinds_left_light
+        - switch.toilet_valve
+        - switch.water_pump_relay
+        - switch.lumi_plug
+        - switch.fridge_switch
+        - cover.gate_cover_gate
+        - script.press_doorbell
+        - script.open_gate
+      exclude_entities:
+        - input_number.guest_room_brightness
+        - input_number.ledintensity
+        - input_number.ledspeed
+        - light.guest_relay1
+        - light.guest_relay2
+        - light.home_lights
+        - light.guest_light
+        - light.outdoor_light
+        - media_player.everywhere
+        - media_player.first_floor
+        - media_player.music_group
+    entity_config:
+      cover.gate_cover_gate:
+        name: Gate
+      sensor.guest_blinds_left_light:
+        name: Outdor illuminance
+      binary_sensor.wicket_wiket_status:
+        name: Power grid
+      binary_sensor.corridormotion_motion:
+        name: Corridor motion
+        linked_battery_sensor: sensor.corridormotion_battery
+        low_battery_threshold: 31
+      binary_sensor.water_leak_moisture:
+        name: Water leak
+        linked_battery_sensor: sensor.water_leak_battery
+        low_battery_threshold: 31
+      binary_sensor.wicket_wicket_doorbell:
+        name: Doorbell
+      binary_sensor.wicket_esphome_wicket:
+        name: Wiket
+      lock.wicket_wicket_lock:
+        name: Wicket lock    
+      lock.yunding_ford_door_lock:
+        name: Door lock
+        code: 1205
+      switch.toilet_valve:
+        type: valve
+      switch.water_pump_relay:
+        type: outlet
+      switch.fridge_switch:
+        type: outlet
+  - name: cam courtyard
+    port: 21065
+    mode: accessory
+    filter:
+      include_entities:
+        - camera.courtyard_sd
+  - name: cam cabinet
+    port: 21066
+    mode: accessory
+    filter:
+      include_entities:
+        - camera.cabinet_cam        
+  - name: cam doorbell
+    port: 21067
+    mode: accessory
+    filter:
+      include_entities:
+        - camera.doorbell_sd
+    entity_config:
+      camera.doorbell_sd:
+        linked_doorbell_sensor: binary_sensor.wicket_wicket_doorbell    
+
+
+logger:
+  # The next line sets the default logging level, for all python modules.
+  # It seems "recommended" to set it to avoid too much logging.
+  default: warning
+  logs:
+    custom_components.zha_toolkit: debug

@@ -1,0 +1,70 @@
+# - platform: mqtt
+#   name: "Kitchen blind"
+#   device_class: blind
+#   command_topic: "RF_bridge/cmnd/Backlog"
+#   qos: 0
+#   payload_open: "rfraw AA B0 4C 04 08 13E2 0262 0122 13E2 38192A192A1A1A19292A192A1A1929292A1A1929292929292A192A1A19292A1A1A1A1A1A1A1A1A1A192A1A1A1A1A1A1A1A1A1A1A1A192A19292A1929292A1A1A1A19 55; rfraw 0"
+#   payload_close: "rfraw AA B0 4C 04 08 13F6 0258 010E 13E2 38192A192A1A1A19292A192A1A1929292A1A1929292929292A192A1A19292A1A1A1A1A1A1A1A1A1A192A1A1A1A1A1A1A1A1A192A1A1A1A1929292A192A192A1A1A19 55; rfraw 0"
+#   payload_stop: "rfraw AA B0 4C 04 08 140A 0258 010E 13EC 38192A192A1A1A19292A192A1A1929292A1A1929292929292A192A1A19292A1A1A1A1A1A1A1A1A1A192A1A1A1A1A1A1A1A1A1A192A1A1A1929292A1A1A192A1A1A19 55; rfraw 0"
+#   optimistic: true
+
+- platform: group
+  name: "Sons room blinds"
+  unique_id: sons_blinds
+  entities:
+    - cover.sons_blind1
+    - cover.sons_blind2
+
+- platform: group
+  name: "Guest room blinds"
+  unique_id: guest_blinds
+  entities:
+    - cover.guest_blind_left
+    - cover.guest_blind_right
+
+- platform: group
+  name: "Bedroom blinds"
+  unique_id: bedroom_blinds
+  entities:
+    - cover.bedroom_blind_left
+    - cover.bedroom_blind_right
+
+- platform: group
+  name: "Cabinet blinds"
+  unique_id: cabinet_blinds
+  entities:
+    - cover.cabinet_blind_left
+    - cover.cabinet_blind_right
+    
+# - platform: mqtt
+#   name: "Gate"
+#   device_class: garage
+#   command_topic: "RF_bridge/cmnd/RfCode"
+#   qos: 0
+#   #payload_open: "4178728"
+#   #payload_close: "4178724"
+#   #payload_stop: "4178724"
+#   payload_open: "8902696"
+#   payload_close: "8902696"
+#   payload_stop: "8902696"
+#   optimistic: true
+
+# - platform: mqtt
+#   name: "Gate left"
+#   device_class: garage
+#   command_topic: "RF_bridge/cmnd/RfCode"
+#   qos: 0
+#   payload_open: "7178738"
+#   payload_close: "7178734"
+#   payload_stop: "7178730"
+#   optimistic: true
+
+# - platform: mqtt
+#   name: "Gate right"
+#   device_class: garage
+#   command_topic: "RF_bridge/cmnd/RfCode"
+#   qos: 0
+#   payload_open: "8178758"
+#   payload_close: "8178754"
+#   payload_stop: "8178750"
+#   optimistic: true      

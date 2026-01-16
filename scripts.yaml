@@ -1,0 +1,400 @@
+activate_alexa_actionable_notification:
+  description: Activates an actionable notification on a specific echo device
+  fields:
+    text:
+      description: The text you would like alexa to speak.
+      example: What would you like the thermostat set to?
+    event_id:
+      description: Correlation ID for event responses
+      example: ask_for_temperature
+    alexa_device:
+      description: Alexa device you want to trigger
+      example: media_player.bedroom_echo
+  sequence:
+  - service: input_text.set_value
+    data:
+      entity_id: input_text.alexa_actionable_notification
+      value: '{"text": "{{ text }}", "event": "{{ event_id }}"}'
+  - service: media_player.play_media
+    data:
+      entity_id: '{{ alexa_device }}'
+      media_content_type: skill
+      media_content_id: amzn1.ask.skill.f1da36d7-bb26-417a-8c54-3d87fece5940
+kitchen_gas_reminder1:
+  alias: kitchen gas reminder1
+  sequence:
+  - condition: state
+    entity_id: binary_sensor.flame_detector
+    state: 'on'
+  - service: script.activate_alexa_actionable_notification
+    data:
+      text: Gas is burning in the kitchen. Would you like me to remind you later?
+      event_id: gas_is_burning_for_5_mins
+      alexa_device: media_player.kitchen_echo
+  mode: single
+turn_off_all_light:
+  alias: Turn off all light
+  sequence:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.bedroomlamp_light
+      - light.cellar_light_esphome_cellar_light
+      - light.corridor
+      - light.esphome_bedroom_light
+      - light.esphome_cabinet_light
+      - light.esphome_door_light
+      - light.esphome_gate_light
+      - light.esphome_guest_light
+      - light.esphome_kitchen_light
+      - light.esphome_mirror_light
+      - light.esphome_sink_light
+      - light.esphome_toilet_light
+      - light.kitchen_lights
+      - light.outdoor_light
+      - light.esphome_sons_light
+      - light.stair_light
+  description: ''
+  icon: mdi:lightbulb-group-off-outline
+unlock_wicket:
+  alias: Unlock wicket and door
+  sequence:
+  - action: lock.unlock
+    metadata: {}
+    data: {}
+    target:
+      entity_id: lock.wicket_wicket_lock
+  - if:
+    - condition: sun
+      after: sunset
+      after_offset: 00:30:00
+    then:
+    - action: light.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - light.esphome_door_light
+        - light.esphome_gate_light
+        - light.corridor
+  - action: lock.unlock
+    metadata: {}
+    data: {}
+    target:
+      entity_id: lock.yunding_ford_door_lock
+  description: ''
+  icon: mdi:lock-open-variant-outline
+open_gate_and_door:
+  alias: Open Gate and Door
+  sequence:
+  - action: cover.open_cover
+    metadata: {}
+    data: {}
+    target:
+      entity_id: cover.gate_cover_gate
+  - if:
+    - condition: sun
+      after: sunset
+      after_offset: 00:30:00
+    then:
+    - action: light.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - light.esphome_gate_light
+        - light.esphome_door_light
+        - light.corridor
+  - action: lock.unlock
+    metadata: {}
+    data: {}
+    target:
+      entity_id: lock.yunding_ford_door_lock
+  description: ''
+  icon: mdi:gate-alert
+close_gate:
+  alias: Close Gate
+  sequence:
+  - action: cover.close_cover
+    metadata: {}
+    data: {}
+    target:
+      entity_id: cover.gate_cover_gate
+  description: ''
+  icon: mdi:gate
+loop_over_zha_devices:
+  alias: Loop over zha_devices
+  sequence:
+  - response_variable: dev_data
+    action: zha_toolkit.zha_devices
+  - data:
+      logger: zha_devices
+      level: error
+      message: '{{ "Got device_data %s" % ( dev_data.devices ) }}'
+    action: system_log.write
+  - alias: List unavailable only
+    data:
+      logger: zha_devices
+      level: error
+      message: "{% set ns = namespace(names=[]) %} {% for item in dev_data.devices
+        if not item.available %}\n  {% set ns.names = ns.names + [ \"'%s'\" % (item.name)
+        ] %}\n{% endfor %} Items: {{ ns.names | join(', ') }}\n"
+    action: system_log.write
+  - repeat:
+      for_each: '{{ dev_data.devices }}'
+      sequence:
+      - data:
+          logger: zha_devices
+          level: error
+          message: "{{ \"Item '%s' Power: %s dBm Available: %s\" % (\n  repeat.item.name,
+            repeat.item.rssi, repeat.item.available\n) }}"
+        action: system_log.write
+  mode: single
+  description: ''
+air_raid_alert:
+  alias: Air raid alert
+  sequence:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.velikodimerska_teritorialna_gromada_air
+        state: 'off'
+      sequence:
+      - action: notify.alexa_media_kitchen_echo
+        metadata: {}
+        data:
+          message: '{{ "It has been no air raid alert in Velyka Dymerka for %s hours
+            and %s minutes" % ( (states("sensor.alert_run_time")|float/3600)|round(0,
+            "floor"), (states("sensor.alert_run_time")|float%3600/60)|round(0,"floor")
+            ) }}'
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.velikodimerska_teritorialna_gromada_air
+        state: 'on'
+      sequence:
+      - action: notify.alexa_media_kitchen_echo
+        metadata: {}
+        data:
+          message: '{{ "The air raid alert has been active for %s hours and %s minutes"
+            % ( (states("sensor.alert_run_time")|float/3600)|round(0, "floor"), (states("sensor.alert_run_time")|float%3600/60)|round(0,"floor")
+            ) }}'
+  description: ''
+  icon: mdi:alarm-light-outline
+electricity_schedule_en:
+  alias: Electricity Schedule en
+  sequence:
+  - action: calendar.get_events
+    target:
+      entity_id: calendar.kyiv_region_6_1_planned_outages
+    data:
+      start_date_time: '{{ today_at() }}'
+      end_date_time: '{{ today_at() + timedelta(days=2) }}'
+    response_variable: calendar_events_en
+  - action: notify.alexa_media_kitchen_echo
+    metadata: {}
+    data:
+      message: "{% set ns = namespace(today_outages=[], tomorrow_outages=[]) %} {%
+        set today = now().date() %} {% set tomorrow = (now() + timedelta(days=1)).date()
+        %}\n{# Process all calendar events #} {% if calendar_events_en['calendar.kyiv_region_6_1_planned_outages'].events
+        is defined %}\n  {% for event in calendar_events_en['calendar.kyiv_region_6_1_planned_outages'].events
+        %}\n    {% set start_dt = as_datetime(event.start) %}\n    {% set end_dt =
+        as_datetime(event.end) %}\n    \n    {% if start_dt.date() == today %}\n      {%
+        set ns.today_outages = ns.today_outages + [{'start': start_dt.strftime('%H:%M'),
+        'end': end_dt.strftime('%H:%M')}] %}\n    {% elif start_dt.date() == tomorrow
+        %}\n      {% set ns.tomorrow_outages = ns.tomorrow_outages + [{'start': start_dt.strftime('%H:%M'),
+        'end': end_dt.strftime('%H:%M')}] %}\n    {% endif %}\n  {% endfor %}\n{%
+        endif %}\n{# Generate message for today #} {% if ns.today_outages | length
+        == 0 %}\n  There are no planned power outages for today. Electricity should
+        be available all day.\n{% elif ns.today_outages | length == 1 %}\n  Today,
+        power is off from {{ ns.today_outages[0].start }} to {{ ns.today_outages[0].end
+        }}. The rest of the day, power is available.\n{% elif ns.today_outages | length
+        == 2 %}\n  Here is today's power schedule. Electricity will be off from {{
+        ns.today_outages[0].start }} to {{ ns.today_outages[0].end }}, and again from
+        {{ ns.today_outages[1].start }} to {{ ns.today_outages[1].end }}. The rest
+        of the day, power should be on.\n{% else %}\n  Today's power schedule has
+        {{ ns.today_outages | length }} planned outages: {% for outage in ns.today_outages
+        %}from {{ outage.start }} to {{ outage.end }}{% if not loop.last %}, {% endif
+        %}{% endfor %}.\n{% endif %}\n{# Generate message for tomorrow #} {% if ns.tomorrow_outages
+        | length == 0 %}\n  {{ ' Tomorrow, there are no planned outages.' }}\n{% elif
+        ns.tomorrow_outages | length == 1 %}\n  {{ ' Tomorrow, power will be off from
+        %s to %s.' % (ns.tomorrow_outages[0].start, ns.tomorrow_outages[0].end) }}\n{%
+        elif ns.tomorrow_outages | length == 2 %}\n  {{ ' Tomorrow, electricity will
+        be off from %s to %s, and again from %s to %s.' % (ns.tomorrow_outages[0].start,
+        ns.tomorrow_outages[0].end, ns.tomorrow_outages[1].start, ns.tomorrow_outages[1].end)
+        }}\n{% else %}\n  {{ ' Tomorrow has %d planned outages: ' % (ns.tomorrow_outages
+        | length) }}{% for outage in ns.tomorrow_outages %}{{ 'from %s to %s' % (outage.start,
+        outage.end) }}{% if not loop.last %}, {% endif %}{% endfor %}.\n{% endif %}"
+  description: Check today's and tomorrow's electricity outage schedule
+  icon: mdi:calendar-clock
+power_status:
+  alias: Power Status
+  sequence:
+  - variables:
+      speaker: "{% if is_state('binary_sensor.presence_detector_ts0225_occupancy',
+        'on') %}\n  media_player.kitchen_echo\n{% else %}\n  media_player.bedroom_echo\n{%
+        endif %}"
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.grid
+        state: 'off'
+      sequence:
+      - action: tts.speak
+        target:
+          entity_id: tts.elevenlabs_text_to_speech
+        data:
+          media_player_entity_id: '{{ speaker }}'
+          message: "{% set outage_duration = now() - states.binary_sensor.grid.last_changed
+            %} {% set hours = (outage_duration.total_seconds() / 3600) | round(0,
+            'floor') %} {% set minutes = ((outage_duration.total_seconds() % 3600)
+            / 60) | round(0, 'floor') %}\n{% set restore_utc = states('sensor.kyiv_region_6_1_next_connectivity')
+            %} {% if restore_utc not in ['unknown','unavailable','none'] %}\n  {%
+            set restore_dt = as_datetime(restore_utc) + timedelta(hours=2) %}\n  {%
+            set restore_str = restore_dt.strftime('%H.%M') %}\n  {% set restore_phrase
+            = 'приблизно о ' ~ restore_str %}\n{% else %}\n  {% set restore_phrase
+            = 'у невідомий час' %}\n{% endif %}\nСвітла зараз немає. Відключення триває
+            вже {{ '%02d:%02d' % (hours, minutes) }}. Очікується, що електрику подадуть
+            {{ restore_phrase }}."
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.grid
+        state: 'on'
+      sequence:
+      - action: tts.speak
+        target:
+          entity_id: tts.elevenlabs_text_to_speech
+        data:
+          media_player_entity_id: '{{ speaker }}'
+          message: "{% set next_outage_utc = states('sensor.kyiv_region_6_1_next_planned_outage')
+            %}\n{% if next_outage_utc not in ['unknown','unavailable','none'] %}\n
+            \ {% set next_dt = as_datetime(next_outage_utc) + timedelta(hours=2) %}\n
+            \ {% set next_time = next_dt.strftime('%H.%M') %}\n  {% set today = now().date()
+            %}\n  {% set tomorrow = (now() + timedelta(days=1)).date() %}\n\n  {%
+            if next_dt.date() == today %}\n    {% set phrase = 'сьогодні о ' ~ next_time
+            %}\n  {% elif next_dt.date() == tomorrow %}\n    {% set phrase = 'завтра
+            о ' ~ next_time %}\n  {% else %}\n    {% set phrase = next_dt.strftime('%d.%m
+            о %H.%M') %}\n  {% endif %}\n{% else %}\n  {% set phrase = 'у невідомий
+            час' %}\n{% endif %}\nЕлектрика зараз є. Наступне планове відключення
+            розпочнеться {{ phrase }}."
+  description: Power status notification via TTS
+  icon: mdi:transmission-tower
+electricity_schedule:
+  alias: Electricity Schedule
+  sequence:
+  - variables:
+      speaker: "{% if is_state('binary_sensor.presence_detector_ts0225_occupancy',
+        'on') %}\n  media_player.kitchen_echo\n{% else %}\n  media_player.bedroom_echo\n{%
+        endif %}"
+  - action: calendar.get_events
+    target:
+      entity_id: calendar.kyiv_region_6_1_planned_outages
+    data:
+      start_date_time: '{{ today_at() }}'
+      end_date_time: '{{ today_at() + timedelta(days=2) }}'
+    response_variable: calendar_events
+  - action: tts.speak
+    target:
+      entity_id: tts.elevenlabs_text_to_speech
+    data:
+      media_player_entity_id: '{{ speaker }}'
+      message: "{% set ns = namespace(today_outages=[], tomorrow_outages=[]) %} {%
+        set today = now().date() %} {% set tomorrow = (now() + timedelta(days=1)).date()
+        %}\n{# Process all events #} {% if calendar_events['calendar.kyiv_region_6_1_planned_outages'].events
+        is defined %}\n  {% for event in calendar_events['calendar.kyiv_region_6_1_planned_outages'].events
+        %}\n    {% set start_dt = as_datetime(event.start) %}\n    {% set end_dt =
+        as_datetime(event.end) %}\n\n    {% if start_dt.date() == today %}\n      {%
+        set ns.today_outages = ns.today_outages + [\n        {'start': start_dt.strftime('%H.%M'),
+        'end': end_dt.strftime('%H.%M')}\n      ] %}\n    {% elif start_dt.date()
+        == tomorrow %}\n      {% set ns.tomorrow_outages = ns.tomorrow_outages + [\n
+        \       {'start': start_dt.strftime('%H.%M'), 'end': end_dt.strftime('%H.%M')}\n
+        \     ] %}\n    {% endif %}\n  {% endfor %}\n{% endif %}\n{# Today message
+        #} {% if ns.today_outages | length == 0 %}\n  Сьогодні немає планових відключень.
+        Електрика має бути протягом усього дня.\n{% elif ns.today_outages | length
+        == 1 %}\n  Сьогодні електрику вимикатимуть з {{ ns.today_outages[0].start
+        }} до {{ ns.today_outages[0].end }}. В інший час світло буде.\n{% elif ns.today_outages
+        | length == 2 %}\n  Сьогодні дві паузи в електропостачанні: з {{ ns.today_outages[0].start
+        }} до {{ ns.today_outages[0].end }}, і повторно з {{ ns.today_outages[1].start
+        }} до {{ ns.today_outages[1].end }}. В інший час електрика буде.\n{% else
+        %}\n  Сьогодні заплановано {{ ns.today_outages | length }} відключень:\n  {%
+        for outage in ns.today_outages %}\n    з {{ outage.start }} до {{ outage.end
+        }}{% if not loop.last %}, {% endif %}\n  {% endfor %}.\n{% endif %}\n{# Tomorrow
+        message #} {% if ns.tomorrow_outages | length == 0 %}\n  На завтра відомостей
+        про планові відключення немає.\n{% elif ns.tomorrow_outages | length == 1
+        %}\n  Завтра світло вимкнуть з {{ ns.tomorrow_outages[0].start }} до {{ ns.tomorrow_outages[0].end
+        }}.\n{% elif ns.tomorrow_outages | length == 2 %}\n  Завтра електрику вимикатимуть
+        двічі: з {{ ns.tomorrow_outages[0].start }} до {{ ns.tomorrow_outages[0].end
+        }}, а також з {{ ns.tomorrow_outages[1].start }} до {{ ns.tomorrow_outages[1].end
+        }}.\n{% else %}\n  Завтра буде {{ ns.tomorrow_outages | length }} відключень:\n
+        \ {% for outage in ns.tomorrow_outages %}\n    з {{ outage.start }} до {{
+        outage.end }}{% if not loop.last %}, {% endif %}\n  {% endfor %}.\n{% endif
+        %}"
+  description: Check today's and tomorrow's electricity outage schedule
+  icon: mdi:calendar-clock
+ai_smart_executor:
+  alias: AI Smart Executor (Immediate & Delayed)
+  icon: mdi:brain
+  mode: parallel
+  max: 50
+  fields:
+    data:
+      description: JSON об'єкт від GPT
+      selector:
+        object: {}
+  sequence:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ data.immediate.action is defined and data.immediate.action
+          is not none }}'
+      sequence:
+      - service: '{{ data.immediate.action }}'
+        target:
+          entity_id: '{{ data.immediate.entity }}'
+  - condition: template
+    value_template: '{{ data.delayed.action is defined and data.delayed.action is
+      not none }}'
+  - delay:
+      seconds: '{{ data.delayed.delay_seconds | int(0) }}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ data.type == ''command'' }}'
+      sequence:
+      - service: '{{ data.delayed.action }}'
+        target:
+          entity_id: '{{ data.delayed.entity }}'
+    - conditions:
+      - condition: template
+        value_template: '{{ data.type == ''reminder'' }}'
+      sequence:
+      - service: notify.mobile_app_iphonexr
+        data:
+          title: ⏰ Нагадування
+          message: '{{ data.delayed.message }}'
+          data:
+            ttl: 0
+            priority: high
+      - service: tts.speak
+        target:
+          entity_id: tts.cloud_tts_streamer
+        data:
+          media_player_entity_id: media_player.kitchen_echo
+          message: 'Нагадую: {{ data.delayed.message }}'
+llm_script_for_music_assistant_voice_requests:
+  alias: LLM Script for Music Assistant voice requests
+  use_blueprint:
+    path: music-assistant/llm_voice_script.yaml
+    input:
+      default_player: media_player.nabu_media_player
+      play_continuously: Never
+      actions:
+      - set_conversation_response: ''
+  description: 'This script is used to play music based on a voice request. The tool
+    takes the following arguments: media_type, artist, album, media_id, radio_mode,
+    area, shuffle. media_id, media_type, and shuffle are always required and must
+    always be supplied as arguments to this tool. An area or Music Assistant media
+    player can optionally be provided in the voice request as well. Use the parameters
+    as described in the description of each parameter. Use this tool whenever the
+    user requests to play music'

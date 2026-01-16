@@ -1,0 +1,161 @@
+- id: '1721677218267'
+  name: Stair light simple
+  entities:
+    light.stair_light:
+      effect_list:
+      - None
+      - Scan
+      - Scan Effect With Custom Values
+      - Twinkle
+      - Custom Twinkle Effect
+      - Random Twinkle
+      - ' Custom Random Twinkle Effect'
+      - Fireworks
+      - Custom Fireworks Effect
+      - Addressable Flicker
+      - Custom Flicker Effect
+      - lambda two
+      - Running range
+      - Running range inverse
+      - Falling light
+      - Rise light
+      - Simple light
+      - Candy Cane
+      - Wheel of Color
+      - Vesuvius
+      supported_color_modes:
+      - rgb
+      effect: None
+      color_mode: rgb
+      brightness: 128
+      hs_color:
+      - 27.13
+      - 45.098
+      rgb_color:
+      - 255
+      - 192
+      - 140
+      xy_color:
+      - 0.455
+      - 0.374
+      friendly_name: Stair Light
+      supported_features: 44
+      state: 'on'
+  metadata:
+    light.stair_light:
+      entity_only: true
+- id: '1728574321131'
+  name: Stair light candy can effect
+  entities:
+    light.stair_light:
+      effect_list:
+      - None
+      - Scan
+      - Scan Effect With Custom Values
+      - Twinkle
+      - Custom Twinkle Effect
+      - Random Twinkle
+      - ' Custom Random Twinkle Effect'
+      - Fireworks
+      - Custom Fireworks Effect
+      - Addressable Flicker
+      - Custom Flicker Effect
+      - lambda two
+      - Running range
+      - Running range inverse
+      - Falling light
+      - Rise light
+      - Simple light
+      - Candy Cane
+      - Wheel of Color
+      - Vesuvius
+      supported_color_modes:
+      - rgb
+      effect: Candy Cane
+      color_mode: rgb
+      brightness: 128
+      hs_color:
+      - 27.13
+      - 45.098
+      rgb_color:
+      - 255
+      - 192
+      - 140
+      xy_color:
+      - 0.455
+      - 0.374
+      friendly_name: Stair Light
+      supported_features: 44
+      state: 'on'
+  icon: mdi:candycane
+  metadata:
+    light.stair_light:
+      entity_only: true
+- id: '1767107513630'
+  name: emergency shutdown
+  entities:
+    switch.fridge_switch:
+      friendly_name: Fridge Switch
+      state: 'off'
+    climate.boiler:
+      hvac_modes:
+      - heat
+      - 'off'
+      min_temp: 7
+      max_temp: 35
+      target_temp_step: 0.1
+      preset_modes:
+      - none
+      - away
+      - comfort
+      - eco
+      - home
+      - sleep
+      - activity
+      current_temperature: 19.6
+      temperature: 19
+      hvac_action: idle
+      preset_mode: sleep
+      friendly_name: Boiler
+      supported_features: 401
+      state: heat
+  icon: mdi:power-plug-off
+  metadata:
+    switch.fridge_switch:
+      entity_only: true
+    climate.boiler:
+      entity_only: true
+- id: '1767107742693'
+  name: Restore power
+  entities:
+    switch.fridge_switch:
+      friendly_name: Fridge Switch
+      state: 'on'
+    climate.boiler:
+      hvac_modes:
+      - heat
+      - 'off'
+      min_temp: 7
+      max_temp: 35
+      target_temp_step: 0.1
+      preset_modes:
+      - none
+      - away
+      - comfort
+      - eco
+      - home
+      - sleep
+      - activity
+      current_temperature: 19.6
+      temperature: 20.2
+      hvac_action: heating
+      preset_mode: none
+      friendly_name: Boiler
+      supported_features: 401
+      state: heat
+  icon: mdi:power-plug
+  metadata:
+    switch.fridge_switch:
+      entity_only: true
+    climate.boiler:
+      entity_only: true

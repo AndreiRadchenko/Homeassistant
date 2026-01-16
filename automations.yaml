@@ -1,0 +1,957 @@
+- id: '1721490600754'
+  alias: Bedroom Switch
+  description: ''
+  trigger:
+  - device_id: e23c7268666d801df6238ad13efe5aed
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: remote_button_short_press
+    id: bedroomSwitchSinglePress
+  - device_id: e23c7268666d801df6238ad13efe5aed
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: remote_button_double_press
+    id: bedroomSwitchDoublePress
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - bedroomSwitchSinglePress
+    then:
+    - type: toggle
+      device_id: 1d62bd7c1da1236c2096ad2a7a23fa3b
+      entity_id: 3ee26b629ebc2fe3f92f15850d026a82
+      domain: light
+    else:
+    - service: light.toggle
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.esphome_bedroom_light
+  mode: single
+- id: '1721515662857'
+  alias: Corridor Switch
+  description: ''
+  trigger:
+  - device_id: 9ab529da38622c37123da3404c148fef
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: remote_button_short_press
+    id: corridorSwitchSinglePress
+  - device_id: 9ab529da38622c37123da3404c148fef
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: remote_button_double_press
+    id: corridorSwitchDoublePress
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - corridorSwitchSinglePress
+    then:
+    - type: toggle
+      device_id: f313f0af6a87c793d04024ba05f01935
+      entity_id: afceb644b042c6c9eedc1736b4719ec8
+      domain: light
+    else:
+    - service: light.toggle
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.esphome_mirror_light
+  mode: single
+- id: '1721545654266'
+  alias: Toilet light conditional
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.esphome_toilet_motion
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - service: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.esphome_toilet_light
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - if:
+    - condition: state
+      entity_id: binary_sensor.esphome_toilet_door
+      state: 'off'
+    then:
+    - delay:
+        hours: 0
+        minutes: 25
+        seconds: 0
+        milliseconds: 0
+  - service: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.esphome_toilet_light
+  mode: restart
+- id: '1721578322315'
+  alias: Turn off lamp on start
+  description: ''
+  trigger:
+  - platform: homeassistant
+    event: start
+  - platform: state
+    entity_id:
+    - binary_sensor.power_monitor_power_meter_status
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 1d62bd7c1da1236c2096ad2a7a23fa3b
+    entity_id: 3ee26b629ebc2fe3f92f15850d026a82
+    domain: light
+  - type: turn_off
+    device_id: f313f0af6a87c793d04024ba05f01935
+    entity_id: afceb644b042c6c9eedc1736b4719ec8
+    domain: light
+  mode: single
+- id: '1721606389314'
+  alias: Corridor Light automation
+  description: ''
+  use_blueprint:
+    path: Blackshome/sensor-light.yaml
+    input:
+      motion_trigger:
+      - binary_sensor.corridormotion_motion
+      light_switch:
+        entity_id: light.corridor
+      time_delay: 10
+      light_brightness: 90
+      light_colour_temperature: 3500
+      include_dynamic_lighting: enable_sun_elevation_colour_brightness
+      dynamic_lighting_max_lux: 900
+      include_sun: sun_enabled
+      include_light_control: []
+      dynamic_lighting_min_brightness: 74
+      dynamic_lighting_min_lux: 450
+- id: '1721606431524'
+  alias: Corridor Light automation
+  description: ''
+  use_blueprint:
+    path: Blackshome/sensor-light.yaml
+    input:
+      motion_trigger:
+      - binary_sensor.corridormotion_motion
+      light_switch:
+        device_id: f313f0af6a87c793d04024ba05f01935
+      time_delay: 10
+      light_brightness: 60
+      light_colour_temperature: 3500
+      include_dynamic_lighting: enable_sun_elevation_colour_brightness
+      dynamic_lighting_max_lux: 700
+      include_sun: sun_enabled
+- id: '1721606836073'
+  alias: Turn off outdoor light on door lock
+  description: ''
+  trigger:
+  - platform: device
+    device_id: 90f2a6e72bfe849ca3a208d21545ada7
+    domain: lock
+    entity_id: 78fa2c22384eceb4b64f36af71f0c74e
+    type: locked
+  condition: []
+  action:
+  - service: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.outdoor_light
+  mode: single
+- id: '1721607079093'
+  alias: Outdoor light on on door open after sunset
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.esphome_corridor_door
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+  action:
+  - service: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.outdoor_light
+  mode: single
+- id: '1721608719459'
+  alias: Kitchen light automation
+  description: ''
+  use_blueprint:
+    path: Blackshome/sensor-light.yaml
+    input:
+      motion_trigger:
+      - binary_sensor.presence_detector_ts0225_motion
+      light_switch:
+        entity_id:
+        - light.esphome_kitchen_light
+        - light.esphome_sink_light
+      time_delay: 1
+      include_sun: sun_enabled
+- id: '1721647824727'
+  alias: Bedroom blind remote
+  description: ''
+  trigger:
+  - device_id: a26883ffa30d3738390761cc8f6285e0
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_1
+    id: up
+  - device_id: a26883ffa30d3738390761cc8f6285e0
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_2
+    id: stop
+  - device_id: a26883ffa30d3738390761cc8f6285e0
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_3
+    id: down
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - up
+      sequence:
+      - service: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.bedroom_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - stop
+      sequence:
+      - service: cover.stop_cover
+        data: {}
+        target:
+          entity_id: cover.bedroom_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - down
+      sequence:
+      - service: cover.close_cover
+        data: {}
+        target:
+          entity_id: cover.bedroom_blinds
+  mode: single
+- id: '1721674558887'
+  alias: Sink light band to kitchen light switch
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: 8f541352036c387495ee57bdf71404b1
+    entity_id: 31ddee5a7b27fe6c002f66b7aaa47def
+    domain: light
+    id: 'on'
+  - platform: device
+    type: turned_off
+    device_id: 8f541352036c387495ee57bdf71404b1
+    entity_id: 31ddee5a7b27fe6c002f66b7aaa47def
+    domain: light
+    id: 'off'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - 'on'
+      sequence:
+      - service: light.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.esphome_sink_light
+    - conditions:
+      - condition: trigger
+        id:
+        - 'off'
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+          - light.esphome_sink_light
+        data: {}
+  mode: single
+- id: '1721730583618'
+  alias: Stair light adjust
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: cd83eb9ce52bdb239fc915b69574e5b9
+    entity_id: 155648aaf718d96e3dd53b670d1ecd86
+    domain: light
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.stair_light_simple
+  mode: single
+- id: '1721792751107'
+  alias: Doorbell cam actionable nitification
+  description: ''
+  use_blueprint:
+    path: AndreiRadchenko/doorbell-cam-actionable-nitification.yaml
+    input:
+      doorbell_button: binary_sensor.wicket_wicket_doorbell
+      doorbell_cam: camera.doorbell_2
+      notify_dev: notify.all_devices
+      uri_: /lovelace/home
+      action1:
+      - service: lock.unlock
+        metadata: {}
+        data: {}
+        target:
+          entity_id: lock.wicket_wicket_lock
+      delay: 60
+      action1_title: Open wiket
+      action2_title: Leave closed
+- id: '1721919280556'
+  alias: Cabinet blind remote
+  description: ''
+  trigger:
+  - device_id: 4bb4e3e79922e7cc2c4979ba07e8d79d
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_1
+    id: up
+  - device_id: 4bb4e3e79922e7cc2c4979ba07e8d79d
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_2
+    id: stop
+  - device_id: 4bb4e3e79922e7cc2c4979ba07e8d79d
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_3
+    id: down
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - up
+      sequence:
+      - service: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - cover.cabinet_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - stop
+      sequence:
+      - service: cover.stop_cover
+        data: {}
+        target:
+          entity_id:
+          - cover.cabinet_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - down
+      sequence:
+      - service: cover.close_cover
+        data: {}
+        target:
+          entity_id:
+          - cover.cabinet_blinds
+  mode: single
+- id: '1722263818841'
+  alias: Sons-room blind remote
+  description: ''
+  trigger:
+  - device_id: ee39b5ea638f3a0122a88c3a2917d103
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_1
+    id: up
+  - device_id: ee39b5ea638f3a0122a88c3a2917d103
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_2
+    id: stop
+  - device_id: ee39b5ea638f3a0122a88c3a2917d103
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_3
+    id: down
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - up
+      sequence:
+      - service: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.sons_room_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - stop
+      sequence:
+      - service: cover.stop_cover
+        data: {}
+        target:
+          entity_id: cover.sons_room_blinds
+    - conditions:
+      - condition: trigger
+        id:
+        - down
+      sequence:
+      - service: cover.close_cover
+        data: {}
+        target:
+          entity_id: cover.sons_room_blinds
+  mode: single
+- id: '1722266303001'
+  alias: Close valve on water leak
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.water_leak_moisture
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.toilet_valve
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.water_pump_relay
+  mode: single
+- id: '1722267661871'
+  alias: water leak notification
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.water_leak_moisture
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - service: notify.ALL_DEVICES
+    data:
+      title: Check this out!
+      message: Water leak detected!
+      data:
+        ttl: 0
+        priority: high
+        image: http://radchenko.duckdns.org/local/images/water_leak.jpeg
+        actions:
+        - action: URI
+          title: Close valve
+          uri: /dashboard-home/toilet
+        push:
+          sound: US-EN-Morgan-Freeman-Water-Detected-In-Basement.wav
+  mode: single
+- id: gas_is_burning_in_the_kitchen
+  alias: gas is burning in the kitchen
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.flame_detector
+    to: 'on'
+    for:
+      minutes: 10
+  action:
+  - service: script.activate_alexa_actionable_notification
+    data_template:
+      text: Gas is burning in the kitchen. Would you like me to remind you later?
+      event_id: gas_is_burning_for_5_mins
+      alexa_device: media_player.kitchen_echo
+- id: gas_burning_reminder
+  alias: gas burning reminder
+  trigger:
+  - platform: event
+    event_type: alexa_actionable_notification
+    event_data:
+      event_id: gas_is_burning_for_5_mins
+      event_response_type: ResponseYes
+  action:
+  - delay:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+  - service: script.kitchen_gas_reminder1
+- id: gas_burning_delayed_reminder
+  alias: gas burning delayed reminder
+  trigger:
+  - platform: event
+    event_type: alexa_actionable_notification
+    event_data:
+      event_id: gas_is_burning_for_5_mins
+      event_response_type: ResponseDuration
+  action:
+  - delay:
+      seconds: '{{ trigger.event.data.event_response | int }}'
+  - service: script.kitchen_gas_reminder1
+- id: unlock_wicket_for_visitor
+  alias: unlock wicket for visitor
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.wicket_wicket_doorbell
+    to: 'on'
+    from: 'off'
+  action:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - service: script.activate_alexa_actionable_notification
+    data_template:
+      text: would you like me to unlock wicket?
+      event_id: actionable_notification_unlock_wicket
+      alexa_device: media_player.kitchen_echo
+  mode: single
+- id: unlock_wicket_via_actionable_notification
+  alias: unlock wicket via actionable notification
+  trigger:
+  - platform: event
+    event_type: alexa_actionable_notification
+    event_data:
+      event_id: actionable_notification_unlock_wicket
+      event_response_type: ResponseYes
+  action:
+  - service: lock.unlock
+    entity_id: lock.wicket_wicket_lock
+- id: '1728573847280'
+  alias: Main grid restored
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.wicket_wiket_status
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.stair_light_candy_can_effect
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.stair_light_candy_can_effect
+  mode: single
+- id: '1732173374618'
+  alias: 'Turn on charger on power resume '
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.charger
+    from: 'off'
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.grid
+    from: 'off'
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+  conditions: []
+  actions:
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.lumi_lumi_plug_switch
+  mode: single
+- id: fridge_switch_auto_control
+  alias: Fridge Switch Auto Control
+  description: Turns fridge off when station stays on, restores it when power returns.
+  triggers:
+  - platform: state
+    entity_id: binary_sensor.station
+    to: 'on'
+    for: 03:00:00
+    id: station_on_3h
+  - platform: state
+    entity_id:
+    - binary_sensor.grid
+    - binary_sensor.generator
+    to: 'on'
+    for: 00:02:00
+    id: power_source_on_2m
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: station_on_3h
+      sequence:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.fridge_switch
+    - conditions:
+      - condition: trigger
+        id: power_source_on_2m
+      sequence:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.fridge_switch
+  mode: single
+- id: zha_ping_charger
+  alias: Ping Charger via ZHA Toolkit
+  description: Updates charger connectivity helper without crashing on timeouts.
+  triggers:
+  - trigger: time_pattern
+    minutes: /1
+  actions:
+  - target:
+      entity_id: input_boolean.charger_online
+    action: input_boolean.turn_off
+  - action: zha_toolkit.ieee_ping
+    data:
+      ieee: 00:15:8d:00:01:dc:0a:94
+    response_variable: result
+    continue_on_error: true
+  - condition: template
+    value_template: '{{ result is defined and result.success }}'
+  - target:
+      entity_id: input_boolean.charger_online
+    action: input_boolean.turn_on
+  mode: restart
+- id: ai_voice_commander
+  alias: AI Voice Commander (Smart + Native Fallback)
+  triggers:
+  - command:
+    - '{{ trigger.user_input.text }}'
+    trigger: conversation
+  actions:
+  - sequence:
+    - action: ai_task.generate_data
+      data:
+        task_name: parse_complex_intent
+        entity_id: ai_task.openai_ai_task
+        instructions: "Current time: {{ now() }}. INPUT REQUEST (ignore the leading
+          words \"будь ласка\"): {{ trigger.user_input.text }} Your task is to analyze
+          the user's natural language request and convert it into structured data
+          for Home Assistant.\n### AVAILABLE DEVICES (Use ONLY these entity_ids):
+          {%- for state in states if state.domain in ['light', 'switch', 'cover',
+          'climate', 'lock', 'scene', 'script'] %} - {{ state.name }}: {{ state.entity_id
+          }} {%- endfor %}\n### CLASSIFICATION RULES (intent_type): 1. **\"command\"**:
+          Use if the request contains a time delay (\"in 10 minutes\") or a duration
+          (\"for 5 minutes\").\n   - Example \"for 5 min\": immediate_action='light.turn_on',
+          delayed_action='light.turn_off', delay_seconds=300.\n   - Example \"in 10
+          min\": immediate_action=null, delayed_action='switch.turn_off', delay_seconds=600.\n2.
+          **\"reminder\"**: Use for notifications (\"remind me about...\", \"tell
+          me to...\"). Calculate `delay_seconds` from the current time to the specified
+          moment. 3. **\"simple\"**: Use for ALL other cases:\n   - Direct commands
+          without timers (\"Turn on the light\").\n   - Complex commands without timers
+          (\"Turn on the hood and turn off the light\").\n   - Questions (\"What is
+          the temperature?\").\n   - Commands with non-time parameters (\"Set the
+          boiler to 20 degrees\").\n\n### FIELD LOGIC: - **immediate_action / immediate_entity**:
+          Fill ONLY if an action must be performed RIGHT NOW (e.g., \"turn on FOR
+          5 minutes\"). If the command is \"in 10 minutes\", these fields must be
+          null. - **delay_seconds**: Integer. If a specific time is mentioned (e.g.,
+          \"at 15:00\"), subtract the current time from the target time to get seconds.
+          - **delayed_action / delayed_entity**: The action/service and entity to
+          be executed after the delay. - **reminder_message**: The text of the reminder
+          (only for intent_type=\"reminder\").\n### CRITICAL CONSTRAINTS: - **ENTITY
+          SANITIZATION**: Ensure `entity_id` and `action` strings contain ONLY letters,
+          numbers, underscores (_), hyphens (-), and dots (.). - **NO HALLUCINATIONS**:
+          Do NOT include any closing brackets, braces, or JSON syntax (like `]`, `}`,
+          `)`) inside the string values. For example, use 'light.bedroom', NOT 'light.bedroom]}}'.
+          - **STRICT MAPPING**: If there is no clear time component or the device
+          is not in the list, ALWAYS set intent_type=\"simple\". - **FORMAT**: Use
+          full service names: 'light.turn_on', NOT 'turn_on'."
+        structure:
+          intent_type:
+            description: 'Type of the intent: ''command'', ''reminder'' or ''simple'''
+            selector:
+              select:
+                options:
+                - command
+                - reminder
+                - simple
+          immediate_action:
+            description: Existing Home Assistant action (service) name (e.g., 'light.turn_on')
+            selector:
+              text:
+          immediate_entity:
+            description: Real entity for immediate execution
+            selector:
+              text:
+          delay_seconds:
+            description: Delay in seconds for delayed execution. Default is 0.
+            selector:
+              number:
+          delayed_action:
+            description: Existing Home Assistant action (service) name (e.g., 'switch.turn_off')
+            selector:
+              text:
+          delayed_entity:
+            description: Real entity for delayed execution
+            selector:
+              text:
+          reminder_message:
+            description: Message for reminder
+            selector:
+              text:
+      response_variable: parsed
+    - choose:
+      - conditions:
+        - condition: template
+          value_template: '{{ parsed.data is defined and parsed.data.intent_type in
+            [''command'', ''reminder''] }}'
+        sequence:
+        - action: script.turn_on
+          target:
+            entity_id: script.ai_smart_executor
+          data:
+            variables:
+              data:
+                type: '{{ parsed.data.intent_type }}'
+                immediate:
+                  action: '{{ parsed.data.immediate_action }}'
+                  entity: '{{ parsed.data.immediate_entity | regex_replace(''[^a-z0-9_.]'',
+                    '''') if parsed.data.immediate_entity else none }}'
+                delayed:
+                  delay_seconds: '{{ parsed.data.delay_seconds | default(0) }}'
+                  action: '{{ parsed.data.delayed_action }}'
+                  entity: '{{ parsed.data.delayed_entity | regex_replace(''[^a-z0-9_.]'',
+                    '''') if parsed.data.delayed_entity else none }}'
+                  message: '{{ parsed.data.reminder_message }}'
+        - set_conversation_response: '- Можливо, я зроблю це для тебе.'
+      default:
+      - action: conversation.process
+        data:
+          agent_id: conversation.openai_conversation
+          text: '{{ trigger.user_input.text }}'
+        response_variable: conv
+      - set_conversation_response: "{{\n  conv.response.speech.plain.speech\n  if
+          conv is defined\n    and conv.response is defined\n    and conv.response.speech
+          is defined\n    and conv.response.speech.plain is defined\n    and conv.response.speech.plain.speech
+          is defined\n  else 'Готово.'\n}}"
+- id: ai_voice_status_led
+  alias: 'System: Voice Assistant LED Status'
+  trigger:
+  - platform: state
+    entity_id: automation.ai_voice_commander_smart_native_fallback
+  - platform: homeassistant
+    event: start
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: automation.ai_voice_commander_smart_native_fallback
+        state: 'on'
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.home_assistant_voice_0a05cb_led_ring
+        data:
+          rgb_color:
+          - 156
+          - 156
+          - 53
+          brightness_pct: 35
+    default:
+    - action: light.turn_on
+      target:
+        entity_id: light.home_assistant_voice_0a05cb_led_ring
+      data:
+        rgb_color:
+        - 102
+        - 53
+        - 156
+        brightness_pct: 35
+- id: ai_voice_toggle_button
+  alias: 'System: Toggle Voice Assistant Automation'
+  trigger:
+  - platform: state
+    entity_id: event.home_assistant_voice_0a05cb_button_press
+  action:
+  - action: automation.toggle
+    target:
+      entity_id: automation.ai_voice_commander_smart_native_fallback
+- id: '1766590489899'
+  alias: Music Assistant - Local LLM Enhanced Voice Support Blueprint
+  description: ''
+  use_blueprint:
+    path: music-assistant/mass_llm_enhanced_assist_blueprint_en.yaml
+    input:
+      llm_agent: conversation.openai_conversation
+      default_player: media_player.nabu_media_player
+      trigger:
+      - (shuffle|play|listen to) {query}
+      - (грай|програй|знайди пісню)
+      combine_text: та
+      no_target_response: Не знайшов плеєр для відтворення
+- id: '1766592598530'
+  alias: Music Assistant - Local(only) Voice Support Blueprint
+  description: ''
+  use_blueprint:
+    path: music-assistant/mass_assist_blueprint_en.yaml
+    input:
+      default_player_entity_id_input: media_player.nabu_media_player
+- id: '1766948238661'
+  alias: New automation dishwasher
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.grid
+    from:
+    - 'off'
+    to:
+    - 'on'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  conditions: []
+  actions:
+  - action: select.select_first
+    metadata: {}
+    target:
+      entity_id: select.dishwasher_active_program
+    data: {}
+  mode: single
+- id: '1766949904509'
+  alias: 'Notify me on power restoration '
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.grid
+    from:
+    - 'off'
+    to:
+    - 'on'
+  conditions: []
+  actions:
+  - action: notify.mobile_app_iphonexr
+    metadata: {}
+    data:
+      message: 'Power has restored '
+      title: Power Now On
+  mode: single
+- id: '1767108611852'
+  alias: Power save on emergency outages
+  description: Smart management of power scenes based on Grid/Generator status
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.grid
+    - binary_sensor.generator
+    from: 'on'
+    to: 'off'
+    for: 00:05:00
+    id: power_lost
+  - trigger: state
+    entity_id:
+    - binary_sensor.grid
+    - binary_sensor.generator
+    from: 'off'
+    to: 'on'
+    for: 00:05:00
+    id: power_restored
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: power_lost
+      - condition: state
+        entity_id: binary_sensor.grid
+        state: 'off'
+      - condition: state
+        entity_id: binary_sensor.generator
+        state: 'off'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.emergency_shutdown
+    - conditions:
+      - condition: trigger
+        id: power_restored
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.grid
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.generator
+          state: 'on'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.restore_power
+  mode: single

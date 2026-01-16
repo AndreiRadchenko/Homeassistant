@@ -1,0 +1,306 @@
+# -----------------------------------------------------------
+# BINARY SENSORS
+# -----------------------------------------------------------
+- binary_sensor:
+    - name: "Grid"
+      unique_id: main_grid_power_status
+      state: >
+        {{ (states('sensor.gate_light_pmeter_voltage') | float(0)) > 170 
+          and (states('sensor.gate_light_pmeter_voltage') | float(0)) < 270 }}
+      icon: >
+        {% if is_state("binary_sensor.grid", "on") %}
+          mdi:transmission-tower
+        {% else %}
+          mdi:transmission-tower-off
+        {% endif %}
+
+    - name: "Station"
+      unique_id: power_station_status
+      state: >
+        {{ is_state('binary_sensor.power_monitor_power_meter_status', 'on')
+          and is_state('binary_sensor.grid', 'off')
+          and is_state('binary_sensor.charger', 'off') }}
+      icon: mdi:home-battery
+
+    - name: "Generator"
+      unique_id: generator_status
+      state: >
+        {{ is_state('binary_sensor.power_monitor_power_meter_status', 'on')
+           and is_state('binary_sensor.grid', 'off')
+           and is_state('binary_sensor.charger', 'on') }}
+      icon: mdi:generator-stationary
+
+    - name: "Backup Power Overload"
+      unique_id: backup_power_overload
+      state: >
+        {% set grid_off = is_state('binary_sensor.grid', 'off') %}
+        {% set power = states('sensor.power_monitor_pmeter_power') | float(0) %}
+        {% set high_load = power > 1000 %}
+        {% set overload_now = power > 2000 %}
+        {% set five_minutes = 300 %}
+        {% set elapsed = as_timestamp(now()) -
+                         as_timestamp(states.binary_sensor.backup_power_overload.last_changed) %}
+
+        {{
+          grid_off and (
+            overload_now or
+            (high_load and elapsed > five_minutes)
+          )
+        }}
+      icon: >
+        {% if is_state('binary_sensor.backup_power_overload', 'on') %}
+          mdi:alert
+        {% else %}
+          mdi:check-circle-outline
+        {% endif %}
+
+    - name: "Charger"
+      unique_id: charger_connected
+      device_class: connectivity
+      delay_on: "00:00:05"
+      delay_off: "00:00:05"
+      state: "{{ is_state('input_boolean.charger_online', 'on') }}"
+
+# -----------------------------------------------------------
+# SENSORS (POWER, TIME, OUTAGES)
+# -----------------------------------------------------------
+- sensor:
+    - name: "Charger power"
+      unique_id: charger_power
+      unit_of_measurement: "W"
+      state: >
+        {% if is_state("binary_sensor.charger", "on") %}
+          {{ states('sensor.lumi_lumi_plug_power') }}
+        {% else %}
+          0
+        {% endif %}
+
+    - name: "Total power"
+      unit_of_measurement: "W"
+      state: >
+        {{ (states('sensor.power_monitor_pmeter_power') | float +
+           states('sensor.charger_power') | float) | round(0) }}
+
+    - name: "Next Power Restoration"
+      state: >
+        {% set v = states('sensor.kyiv_region_6_1_next_connectivity') %}
+        {% if v in ['unknown', 'unavailable', 'none'] %}
+          unknown
+        {% else %}
+          {% set dt = as_datetime(v) | as_local %}
+          {% set today = now().date() %}
+          {% set tomorrow = (now() + timedelta(days=1)).date() %}
+          {% set time_str = dt.strftime('%H:%M') %}
+
+          {% if dt.date() == today %}
+            today at {{ time_str }}
+          {% elif dt.date() == tomorrow %}
+            tomorrow at {{ time_str }}
+          {% else %}
+            {{ dt.strftime('%A') }} at {{ time_str }}
+          {% endif %}
+        {% endif %}
+
+    - name: "Next Planned Outage"
+      state: >
+        {% set v = states('sensor.kyiv_region_6_1_next_planned_outage') %}
+        {% if v in ['unknown', 'unavailable', 'none'] %}
+          unknown
+        {% else %}
+          {% set dt = as_datetime(v) | as_local %}
+          {% set today = now().date() %}
+          {% set tomorrow = (now() + timedelta(days=1)).date() %}
+          {% set time_str = dt.strftime('%H:%M') %}
+
+          {% if dt.date() == today %}
+            today at {{ time_str }}
+          {% elif dt.date() == tomorrow %}
+            tomorrow at {{ time_str }}
+          {% else %}
+            {{ dt.strftime('%A') }} at {{ time_str }}
+          {% endif %}
+        {% endif %}
+
+
+# -----------------------------------------------------------
+# ALERT RUN TIME
+# -----------------------------------------------------------
+- trigger:
+    - platform: time_pattern
+      minutes: "*"
+  sensor:
+    - name: "Alert Run Time"
+      icon: mdi:clock-end
+      device_class: duration
+      unit_of_measurement: "Sec"
+      state: >
+        {{ (as_timestamp(now()) -
+            as_timestamp(states.binary_sensor.velikodimerska_teritorialna_gromada_air.last_changed))
+            | round(0) }}
+
+- switch:
+    - name: "Fridge Switch"
+      unique_id: fridge_switch
+      state: "{{ is_state('light.fridge_relay', 'on') }}"
+      turn_on:
+        service: light.turn_on
+        target:
+          entity_id: light.fridge_relay
+      turn_off:
+        service: light.turn_off
+        target:
+          entity_id: light.fridge_relay
+          
+# -----------------------------------------------------------
+# COVERS (MIGRATED FROM LEGACY cover: - platform: template)
+# -----------------------------------------------------------
+- cover:
+    - default_entity_id: cover.sons_blind1
+      name: "Sons blind1"
+      device_class: blind
+      position: "{{ states('sensor.sons_blind1_position') | int }}"
+      open_cover:
+        - action: esphome.sons_blind_control_stepper1
+          data:
+            target: 100
+      close_cover:
+        - action: esphome.sons_blind_control_stepper1
+          data:
+            target: 0
+      set_cover_position:
+        - action: esphome.sons_blind_control_stepper1
+          data:
+            target: "{{ position }}"
+      stop_cover:
+        - action: esphome.sons_blind_stepper1_stop
+      icon: >-
+        {% if states('sensor.sons_blind1_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}
+
+    - default_entity_id: cover.sons_blind2
+      name: "Sons blind2"
+      device_class: blind
+      position: "{{ states('sensor.sons_blind2_position') | int }}"
+      open_cover:
+        - action: esphome.sons_blind_control_stepper2
+          data:
+            target: 100
+      close_cover:
+        - action: esphome.sons_blind_control_stepper2
+          data:
+            target: 0
+      set_cover_position:
+        - action: esphome.sons_blind_control_stepper2
+          data:
+            target: "{{ position }}"
+      stop_cover:
+        - action: esphome.sons_blind_stepper2_stop
+      icon: >-
+        {% if states('sensor.sons_blind2_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}
+
+    - default_entity_id: cover.cabinet_blind_left
+      name: "Cabinet Blind Left"
+      device_class: blind
+      position: "{{ states('sensor.cabinet_blind1_position') | int }}"
+      open_cover:
+        - action: esphome.cabinet_blind_control_stepper1
+          data:
+            target: 100
+      close_cover:
+        - action: esphome.cabinet_blind_control_stepper1
+          data:
+            target: 0
+      set_cover_position:
+        - action: esphome.cabinet_blind_control_stepper1
+          data:
+            target: "{{ position }}"
+      stop_cover:
+        - action: esphome.cabinet_blind_stepper1_stop
+      icon: >-
+        {% if states('sensor.cabinet_blind1_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}
+
+    - default_entity_id: cover.cabinet_blind_right
+      name: "Cabinet Blind Right"
+      device_class: blind
+      position: "{{ states('sensor.cabinet_blind2_position') | int }}"
+      open_cover:
+        - action: esphome.cabinet_blind_control_stepper2
+          data:
+            target: 100
+      close_cover:
+        - action: esphome.cabinet_blind_control_stepper2
+          data:
+            target: 0
+      set_cover_position:
+        - action: esphome.cabinet_blind_control_stepper2
+          data:
+            target: "{{ position }}"
+      stop_cover:
+        - action: esphome.cabinet_blind_stepper2_stop
+      icon: >-
+        {% if states('sensor.cabinet_blind2_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}
+
+    - default_entity_id: cover.bedroom_blind_left
+      name: "Bedroom Blind Left"
+      device_class: blind
+      position: "{{ states('sensor.bedroom_blind1_position') | int }}"
+      open_cover:
+        - action: esphome.bedroom_blind_control_stepper1
+          data:
+            target: 100
+      close_cover:
+        - action: esphome.bedroom_blind_control_stepper1
+          data:
+            target: 0
+      set_cover_position:
+        - action: esphome.bedroom_blind_control_stepper1
+          data:
+            target: "{{ position }}"
+      stop_cover:
+        - action: esphome.bedroom_blind_stepper1_stop
+      icon: >-
+        {% if states('sensor.bedroom_blind1_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}
+
+    - default_entity_id: cover.bedroom_blind_right
+      name: "Bedroom Blind Right"
+      device_class: blind
+      position: "{{ states('sensor.bedroom_blind2_position') | int }}"
+      open_cover:
+        - action: esphome.bedroom_blind_control_stepper2
+          data:
+            target: 100
+      close_cover:
+        - action: esphome.bedroom_blind_control_stepper2
+          data:
+            target: 0
+      set_cover_position:
+        - action: esphome.bedroom_blind_control_stepper2
+          data:
+            target: "{{ position }}"
+      stop_cover:
+        - action: esphome.bedroom_blind_stepper2_stop
+      icon: >-
+        {% if states('sensor.bedroom_blind2_position')|float > 70 %}
+            mdi:blinds-open
+        {% else %}
+            mdi:blinds
+        {% endif %}          

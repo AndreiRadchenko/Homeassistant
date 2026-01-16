@@ -1,0 +1,50 @@
+# Ignore folders
+.storage/
+.cloud/
+.google.token
+.ssh/
+tts/
+custom_components/
+www/
+image/
+deps/
+scans/
+blueprints/
+esphome
+
+# Ignore database files
+*.db
+*.db-shm
+*.db-wal
+home-assistant_v2.db*
+zigbee.db*
+
+# Ignore log files
+*.log
+*.log.*
+home-assistant.log*
+
+# Ignore credentials and secrets
+ip_bans.yaml
+secrets.yaml
+known_devices.yaml
+SERVICE_ACCOUNT.json
+*.json
+
+# Ignore runtime files
+.HA_VERSION
+.ha_run.lock
+.shopping_list.json
+
+# Keep these files
+!.gitignore
+!README.md
+!Readme.md
+!configuration.yaml
+!automations.yaml
+!scripts.yaml
+!scenes.yaml
+!cameras.yaml
+!covers.yaml
+!templates.yaml
+!templates-old.yaml
