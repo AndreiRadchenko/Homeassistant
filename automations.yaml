@@ -485,28 +485,28 @@
 - id: '1722267661871'
   alias: water leak notification
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.water_leak_moisture
     from: 'off'
     to: 'on'
-  condition: []
-  action:
-  - service: notify.ALL_DEVICES
-    data:
+    trigger: state
+  conditions: []
+  actions:
+  - data:
       title: Check this out!
       message: Water leak detected!
       data:
         ttl: 0
         priority: high
-        image: http://radchenko.duckdns.org/local/images/water_leak.jpeg
+        image: https://radchenko.duckdns.org/local/images/water_leak.jpeg
         actions:
         - action: URI
           title: Close valve
           uri: /dashboard-home/toilet
         push:
           sound: US-EN-Morgan-Freeman-Water-Detected-In-Basement.wav
+    action: notify.ALL_DEVICES
   mode: single
 - id: gas_is_burning_in_the_kitchen
   alias: gas is burning in the kitchen
@@ -898,11 +898,17 @@
     - 'on'
   conditions: []
   actions:
-  - action: notify.mobile_app_iphonexr
+  - action: notify.ALL_DEVICES
     metadata: {}
     data:
-      message: 'Power has restored '
+      message: 'Main grid restored '
       title: Power Now On
+      data:
+        ttl: 0
+        priority: high
+        image: https://radchenko.duckdns.org/local/images/lamp-on.jpg
+        push:
+          sound: Ringtone_2_Haptic-sashimi.caf
   mode: single
 - id: '1767108611852'
   alias: Power save on emergency outages
@@ -954,4 +960,29 @@
       - action: scene.turn_on
         target:
           entity_id: scene.restore_power
+  mode: single
+- id: '1772370140443'
+  alias: 'Notify me on power outage '
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.grid
+    from:
+    - 'on'
+    to:
+    - 'off'
+  conditions: []
+  actions:
+  - action: notify.ALL_DEVICES
+    metadata: {}
+    data:
+      message: Main grid outage detected
+      title: Power Now Down
+      data:
+        ttl: 0
+        priority: high
+        image: https://radchenko.duckdns.org/local/images/lamp-off.jpg
+        push:
+          sound: low_power.caf
   mode: single

@@ -153,6 +153,11 @@ homekit:
         - cover.gate_cover_gate
         - script.press_doorbell
         - script.open_gate
+        - binary_sensor.grid
+        - binary_sensor.station
+        - binary_sensor.generator
+        - sensor.total_power_homekit
+        - sensor.grid_voltage_homekit        
       exclude_entities:
         - input_number.guest_room_brightness
         - input_number.ledintensity
@@ -165,6 +170,7 @@ homekit:
         - media_player.everywhere
         - media_player.first_floor
         - media_player.music_group
+
     entity_config:
       cover.gate_cover_gate:
         name: Gate

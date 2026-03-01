@@ -146,8 +146,8 @@
       - home
       - sleep
       - activity
-      current_temperature: 19.6
-      temperature: 20.2
+      current_temperature: 17.5
+      temperature: 19.1
       hvac_action: heating
       preset_mode: none
       friendly_name: Boiler

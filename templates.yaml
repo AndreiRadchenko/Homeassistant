@@ -4,6 +4,7 @@
 - binary_sensor:
     - name: "Grid"
       unique_id: main_grid_power_status
+      device_class: occupancy
       state: >
         {{ (states('sensor.gate_light_pmeter_voltage') | float(0)) > 170 
           and (states('sensor.gate_light_pmeter_voltage') | float(0)) < 270 }}
@@ -16,6 +17,7 @@
 
     - name: "Station"
       unique_id: power_station_status
+      device_class: occupancy
       state: >
         {{ is_state('binary_sensor.power_monitor_power_meter_status', 'on')
           and is_state('binary_sensor.grid', 'off')
@@ -24,10 +26,11 @@
 
     - name: "Generator"
       unique_id: generator_status
+      device_class: occupancy
       state: >
         {{ is_state('binary_sensor.power_monitor_power_meter_status', 'on')
-           and is_state('binary_sensor.grid', 'off')
-           and is_state('binary_sensor.charger', 'on') }}
+          and is_state('binary_sensor.grid', 'off')
+          and is_state('binary_sensor.charger', 'on') }}
       icon: mdi:generator-stationary
 
     - name: "Backup Power Overload"
@@ -39,7 +42,7 @@
         {% set overload_now = power > 2000 %}
         {% set five_minutes = 300 %}
         {% set elapsed = as_timestamp(now()) -
-                         as_timestamp(states.binary_sensor.backup_power_overload.last_changed) %}
+                        as_timestamp(states.binary_sensor.backup_power_overload.last_changed) %}
 
         {{
           grid_off and (
@@ -79,7 +82,21 @@
       unit_of_measurement: "W"
       state: >
         {{ (states('sensor.power_monitor_pmeter_power') | float +
-           states('sensor.charger_power') | float) | round(0) }}
+          states('sensor.charger_power') | float) | round(0) }}
+
+    - name: "Total Power HomeKit"
+      unique_id: total_power_homekit
+      unit_of_measurement: "lx"
+      device_class: illuminance
+      state: >
+        {{ states('sensor.total_power') | float(0) | round(0) }}
+
+    - name: "Grid Voltage HomeKit"
+      unique_id: grid_voltage_homekit
+      unit_of_measurement: "lx"
+      device_class: illuminance
+      state: >
+        {{ states('sensor.gate_light_pmeter_voltage') | float(0) | round(0) }}
 
     - name: "Next Power Restoration"
       state: >
